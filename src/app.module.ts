@@ -11,7 +11,7 @@ import { AppService } from './app.service';
       port: 3306,
       username: 'root',
       password: 'root',
-      database: 'dbframe',
+      database: 'todolist',
       entities: [],
       synchronize: true,
       logging: true,
