@@ -26,6 +26,20 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Comandos USados
+````bash
+npm i -g @nestjs/cli
+````
+````bash
+nest new user-task
+````
+````bash
+npm install --save @nestjs/typeorm typeorm mysql2
+````
+````bash
+npm install --save @nestjs/swagger
+````
+
 ## Stay in touch
 
 - Author - [Gabriel Oliveira]
