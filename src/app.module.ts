@@ -2,9 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TaskModule } from './task/task.module';
+import { UserModule } from './user/user.module';
+import { Task } from './task/entity/task.entity';
+import { User } from './user/entity/user.entity';
 
 @Module({
   imports: [
+    TaskModule,
+    UserModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -12,7 +18,7 @@ import { AppService } from './app.service';
       username: 'root',
       password: 'root',
       database: 'todolist',
-      entities: [],
+      entities: [Task, User],
       synchronize: true,
       logging: true,
     }),
