@@ -26,7 +26,7 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Comandos USados
+## Comandos Usados
 ````bash
 npm i -g @nestjs/cli
 ````
@@ -42,4 +42,4 @@ npm install --save @nestjs/swagger
 
 ## Stay in touch
 
-- Author - [Gabriel Oliveira]
+- Author - Gabriel Oliveira
