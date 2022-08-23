@@ -47,6 +47,7 @@ export class UserService {
     );
     return this.findOne(id);
   }
+
   async hashPassword(user) {
     const password = user.password;
     const saltRounds = 10;
@@ -57,7 +58,6 @@ export class UserService {
         resolve(hash);
       });
     });
-
     return hashedPassword;
   }
 }
