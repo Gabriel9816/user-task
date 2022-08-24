@@ -60,4 +60,10 @@ export class UserService {
     });
     return hashedPassword;
   }
+  async updated(UserToUpdate: User, id: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+    const updated = Object.assign(UserToUpdate, user);
+
+    return await this.userRepository.save(updated);
+  }
 }
