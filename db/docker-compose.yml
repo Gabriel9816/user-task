@@ -7,6 +7,8 @@ services:
       MYSQL_DATABASE: todolist
     ports:
       - "3308:3306"
+    voulmes:
+      - ./db:var/lib/mysql
   admin:     
     image: adminer     
     ports:       

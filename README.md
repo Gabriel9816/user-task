@@ -44,7 +44,18 @@ npm install --save bcrypt
 ````bash
 npm install --save -D @types/bcrypt
 ````
-
+````bash
+npm install --save @nestjs/passport passport passport-local
+````
+````bash
+npm install --save-dev @types/passport-local
+````
+````bash
+npm install --save @nestjs/jwt passport-jwt
+````
+````bash
+npm install --save-dev @types/passport-jwt
+````
 ## Stay in touch
 
 - Author - Gabriel Oliveira

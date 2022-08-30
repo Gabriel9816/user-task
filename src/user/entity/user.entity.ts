@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+/* eslint-disable prettier/prettier */
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -17,9 +18,9 @@ export class User {
   @Column({ length: 500 })
   confirmPass: string;
 
-  @Column({ length: 500 })
+  @CreateDateColumn({ length: 500 })
   createat: Date;
 
-  @Column({ length: 500 })
+  @CreateDateColumn({ length: 500 })
   update: Date;
 }
