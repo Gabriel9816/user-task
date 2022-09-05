@@ -1,47 +1,61 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
   Post,
-  Put,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { CreateUserDto } from './dto/user.dto';
+import { UpUserDto } from './dto/upUser.dto';
 import { User } from './entity/user.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  findAll(): Promise<User[]> {
+  showMessage(): string {
+    return 'Here comes the User';
+  }
+
+  @Get('/list')
+  findAllUsers(): Promise<User[]> {
     return this.userService.findAll();
   }
 
   @Get('/:id')
-  findUser(@Param('id') id: string): Promise<User> {
-    return this.userService.findOne(id);
+  findOneUserById(@Param('id') id: string): Promise<User> {
+    return this.userService.findOneById(id);
   }
 
-  @Get('find/:id')
-  findOneMore(@Param('id') id: string): string {
-    return `encontrei um outro user com id ${id}`;
+  @Get('/email/:email')
+  @UseGuards(AuthGuard())
+  findOneUserByEmail(@Param('email') email: string): Promise<User> {
+    return this.userService.findOneByEmail(email);
   }
 
   @Post()
-  createUser(@Body() user: User): string {
-    this.userService.create(user);
-    return 'A New User was Created';
+  createUser(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    return this.userService.create(createUserDto);
   }
 
-  @Put('/:id')
-  updateUser(@Param('id') id: string, @Body() user: User): Promise<User> {
-    return this.userService.update(id, user);
+  @Patch('/:id')
+  updateUser(
+    @Param('id') id: string,
+    @Body(ValidationPipe) upUserDto: UpUserDto,
+  ): Promise<User> {
+    return this.userService.update(id, upUserDto);
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    this.userService.remove(id);
+  @Delete('/:id')
+  async removeUser(@Param('id') id: string): Promise<string> {
+    await this.userService.remove(id);
+    return 'The User was successfully Removed';
   }
 }

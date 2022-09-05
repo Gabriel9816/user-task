@@ -1,7 +1,14 @@
 /* eslint-disable prettier/prettier */
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-@Entity()
+@Entity('user_table')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -18,9 +25,24 @@ export class User {
   @Column({ length: 500 })
   confirmPass: string;
 
-  @CreateDateColumn({ length: 500 })
-  createat: Date;
+  @Column({ length: 500 })
+  status: boolean;
+
+  @Column({ length: 500 })
+  confirmationToken: string;
+
+  @Column({ nullable: false })
+  salt: string;
+
 
   @CreateDateColumn({ length: 500 })
+  createAt: Date;
+
+  @UpdateDateColumn({ length: 500 })
   update: Date;
+
+  async checkPassword(password: string): Promise<boolean> {
+    const hash = await bcrypt.hash(password, this.salt);
+    return hash === this.password;
+  }
 }

@@ -5,7 +5,7 @@ export class CreateTaskDto {
   id: string;
 
   @ApiProperty()
-  name: string;
+  description: string;
 
   @ApiProperty({ enum: ['Facil', 'Moderado', 'Dificil'] })
   situation: TaskRole;

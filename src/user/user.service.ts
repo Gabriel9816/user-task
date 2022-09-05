@@ -1,8 +1,17 @@
-import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
-import { User } from './entity/user.entity';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { PermitDto } from './dto/permit.dto';
+import { CreateUserDto } from './dto/user.dto';
+import { UpUserDto } from './dto/upUser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entity/user.entity';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -11,59 +20,89 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(user: User): void {
-    this.userRepository.save(user);
+  async create(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    createUserDto.confirmToken = crypto.randomBytes(32).toString('hex');
+    createUserDto.salt = await bcrypt.genSalt();
+    createUserDto.password = await bcrypt.hash(
+      createUserDto.password,
+      createUserDto.salt,
+    );
+    createUserDto.status = false;
+    try {
+      await this.userRepository.save(createUserDto);
+      delete createUserDto.password;
+      delete createUserDto.salt;
+      return createUserDto;
+    } catch (error) {
+      if (error.code.toString() === '23505') {
+        throw new ConflictException('This email address is already in use');
+      } else {
+        throw new InternalServerErrorException(
+          'Error in saving the user in database',
+        );
+      }
+    }
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    try {
+      return await this.userRepository.find();
+    } catch (error) {
+      throw new InternalServerErrorException('Impossible to find all users');
+    }
   }
 
-  async findOne(userId: string): Promise<User> {
-    return this.userRepository.findOne({
-      where: {
-        id: userId,
-      },
-    });
+  async findOneById(id: string): Promise<User> {
+    const user = this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.name', 'user.email'])
+      .where('user.id = :id', { id: id })
+      .getOne();
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
-  async remove(id: string) {
-    return await this.userRepository.delete(id);
+  async findOneByEmail(email: string): Promise<User> {
+    const user = this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.name', 'user.email'])
+      .where('user.email = :email', { email: email })
+      .getOne();
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
-  async update(id: string, user: User): Promise<User> {
-    this.userRepository.update(
-      {
-        id: id,
-      },
-      {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-        confirmPass: user.confirmPass,
-        createat: user.createat,
-        update: user.update,
-      },
-    );
-    return this.findOne(id);
-  }
-
-  async hashPassword(user) {
-    const password = user.password;
-    const saltRounds = 10;
-
-    const hashedPassword = await new Promise((resolve, reject) => {
-      bcrypt.hash(password, saltRounds, function (err, hash) {
-        if (err) reject(err);
-        resolve(hash);
-      });
-    });
-    return hashedPassword;
-  }
-  async updated(UserToUpdate: User, id: string): Promise<User> {
+  async update(id: string, upUserDto: UpUserDto): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
-    const updated = Object.assign(UserToUpdate, user);
+    const { name, email, status } = upUserDto;
+    user.name = name ? name : user.name;
+    user.email = email ? email : user.email;
+    user.status = status === undefined ? user.status : status;
+    try {
+      await this.userRepository.save(user);
+      return this.findOneById(id);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error in saving the user in database',
+      );
+    }
+  }
 
-    return await this.userRepository.save(updated);
+  async remove(id: string): Promise<void> {
+    const result = await this.userRepository.delete({ id });
+    if (result.affected === 0) {
+      throw new NotFoundException('Not found an user with the informed ID');
+    }
+  }
+
+  async checkCredential(permitDto: PermitDto): Promise<User> {
+    const { email, password } = permitDto;
+    let user = new User();
+    user = await this.userRepository.findOneBy({ email });
+    if (user && (await user.checkPassword(password))) {
+      return user;
+    } else {
+      return null;
+    }
   }
 }

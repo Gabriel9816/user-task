@@ -56,6 +56,9 @@ npm install --save @nestjs/jwt passport-jwt
 ````bash
 npm install --save-dev @types/passport-jwt
 ````
+````bash
+npm i --save class-validator class-transformer
+````
 ## Stay in touch
 
 - Author - Gabriel Oliveira

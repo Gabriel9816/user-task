@@ -1,12 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('task_table')
 export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ length: 500 })
-  name: string;
+  description: string;
 
   @Column('enum')
   situation: TaskRole;
