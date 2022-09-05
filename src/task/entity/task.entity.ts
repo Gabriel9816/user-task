@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/user/entity/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 
 @Entity('task_table')
 export class Task {
@@ -10,6 +11,8 @@ export class Task {
 
   @Column('enum')
   situation: TaskRole;
+  @OneToOne(() => User, (user) => user.task) // specify inverse side as a second parameter
+  user: User;
 }
 export enum TaskRole {
   easy = 'Facil',

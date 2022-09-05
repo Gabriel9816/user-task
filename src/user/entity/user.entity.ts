@@ -1,9 +1,12 @@
 /* eslint-disable prettier/prettier */
 import * as bcrypt from 'bcrypt';
+import { Task } from 'src/task/entity/task.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -34,12 +37,16 @@ export class User {
   @Column({ nullable: false })
   salt: string;
 
-
   @CreateDateColumn({ length: 500 })
   createAt: Date;
 
   @UpdateDateColumn({ length: 500 })
   update: Date;
+
+  @OneToOne(() => Task, (Task) => Task.user)
+  @JoinColumn()
+  task: Task;
+
 
   async checkPassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);
