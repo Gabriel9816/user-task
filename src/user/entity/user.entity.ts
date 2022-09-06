@@ -5,8 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -43,10 +42,12 @@ export class User {
   @UpdateDateColumn({ length: 500 })
   update: Date;
 
-  @OneToOne(() => Task, (Task) => Task.user)
-  @JoinColumn()
-  task: Task;
+  // @OneToOne(() => Task, (Task) => Task.user)
+  // @JoinColumn()
+  // task: Task;
 
+  @ManyToOne(() => Task, (Task) => Task.user)
+  task: Task;
 
   async checkPassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);
