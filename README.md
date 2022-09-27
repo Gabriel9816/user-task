@@ -59,6 +59,21 @@ npm install --save-dev @types/passport-jwt
 ````bash
 npm i --save class-validator class-transformer
 ````
+````bash
+npm install --save -g @angular/cli
+````
+````bash
+
+````
+````bash
+
+````
+````bash
+
+````
+````bash
+
+````
 ## Stay in touch
 
 - Author - Gabriel Oliveira
